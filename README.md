@@ -54,6 +54,33 @@ kaggle datasets download -d kartik2112/fraud-detection -p datasets/
 python ingestion/data_cleaner.py
 ```
 
+## BigQuery setup
+
+To upload cleaned tables to BigQuery, add the following to your `.env` file:
+
+```text
+GCP_PROJECT_ID=project-368ffaff-af84-4aac-9b2
+BQ_DATASET=smartshop
+```
+
+Then set up Google application default credentials:
+
+```bash
+export GOOGLE_APPLICATION_CREDENTIALS="/path/to/service-account.json"
+```
+
+Or run:
+
+```bash
+gcloud auth application-default login
+```
+
+Finally run:
+
+```bash
+python ingestion/bigquery_uploader.py
+```
+
 ## Notes
 - Large dataset files are intentionally excluded from git; do not add them to the repository.
 - If you want to share datasets with collaborators, consider uploading them to cloud storage or a GitHub Release.
