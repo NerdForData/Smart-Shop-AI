@@ -10,6 +10,8 @@ kaggle.json
 # Downloaded datasets
 datasets/
 ingestion/*.zip
+data/raw/
+data/clean/
 
 # Python
 __pycache__/
