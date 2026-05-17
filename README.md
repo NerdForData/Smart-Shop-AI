@@ -61,15 +61,16 @@ To upload cleaned tables to BigQuery, add the following to your `.env` file:
 ```text
 GCP_PROJECT_ID=project-368ffaff-af84-4aac-9b2
 BQ_DATASET=smartshop
+GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json
 ```
 
-Then set up Google application default credentials:
+Then either use the `.env` value above or set the variable directly in your shell:
 
 ```bash
 export GOOGLE_APPLICATION_CREDENTIALS="/path/to/service-account.json"
 ```
 
-Or run:
+Or log in with gcloud:
 
 ```bash
 gcloud auth application-default login
