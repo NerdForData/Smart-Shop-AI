@@ -59,18 +59,19 @@ python ingestion/data_cleaner.py
 To upload cleaned tables to BigQuery, add the following to your `.env` file:
 
 ```text
-GCP_PROJECT_ID=project-368ffaff-af84-4aac-9b2
+PROJECT_ID=project-368ffaff-af84-4aac-9b2
 BQ_DATASET=smartshop
-GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json
+# Optional: only set this if you use a service account JSON file
+# GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json
 ```
 
-Then either use the `.env` value above or set the variable directly in your shell:
+If you use a service account, set the variable either in `.env` or in your shell:
 
 ```bash
 export GOOGLE_APPLICATION_CREDENTIALS="/path/to/service-account.json"
 ```
 
-Or log in with gcloud:
+If you prefer user authentication, log in with gcloud instead:
 
 ```bash
 gcloud auth application-default login
