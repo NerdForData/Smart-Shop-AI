@@ -1,0 +1,53 @@
+# docker-compose.yml
+
+version: '3.8'
+
+services:
+
+  # ── Main API ───────────────────────────────────
+  smartshop-ai:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: smartshop-ai
+    ports:
+      - "8000:8000"
+    environment:
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - PROJECT_ID=${PROJECT_ID}
+      - BQ_DATASET=${BQ_DATASET}
+      - BQ_LOCATION=${BQ_LOCATION}
+      - CHROMA_DIR=/app/chroma_db
+      - EMBEDDING_MODEL=${EMBEDDING_MODEL}
+      - GOOGLE_GENAI_USE_VERTEXAI=${GOOGLE_GENAI_USE_VERTEXAI}
+    volumes:
+      # Mount ChromaDB so it persists between restarts
+      - chroma_data:/app/chroma_db
+      # Mount GCP credentials for BigQuery access
+      - ${HOME}/.config/gcloud:/root/.config/gcloud:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+
+  # ── Redis for caching (optional but good practice) ──
+  redis:
+    image: redis:7.2-alpine
+    container_name: smartshop-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  chroma_data:
+  redis_data:
