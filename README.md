@@ -59,7 +59,7 @@ python ingestion/data_cleaner.py
 To upload cleaned tables to BigQuery, add the following to your `.env` file:
 
 ```text
-PROJECT_ID=project-368ffaff-af84-4aac-9b2
+PROJECT_ID=smart-shop-ai-496616
 BQ_DATASET=smartshop
 # Optional: only set this if you use a service account JSON file
 # GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json
