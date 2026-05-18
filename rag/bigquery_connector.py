@@ -7,15 +7,15 @@ import pandas as pd
 
 load_dotenv()
 
-PROJECT_ID = os.getenv("PROJECT_ID", "project-368ffaff-af84-4aac-9b2")
-DATASET_ID = os.getenv("BQ_DATASET", "smartshop")
-BQ_LOCATION = os.getenv("BQ_LOCATION", "EU")
+PROJECT_ID  = os.getenv("PROJECT_ID",  "smart-shop-ai-496616")
+DATASET_ID  = os.getenv("BQ_DATASET",  "smartshop")
+BQ_LOCATION = os.getenv("BQ_LOCATION", "US")
 
-print(f"DEBUG - PROJECT_ID: {PROJECT_ID}")
-print(f"DEBUG - DATASET_ID: {DATASET_ID}")
-print(f"DEBUG - LOCATION:   {BQ_LOCATION}")
+print(f"Project  : {PROJECT_ID}")
+print(f"Dataset  : {DATASET_ID}")
+print(f"Location : {BQ_LOCATION}")
 
-# Clean up bad credential path if still in .env
+# Clean up invalid credential path if present
 credentials_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS", "")
 if credentials_path and (
     credentials_path == "/path/to/your-service-account.json"
@@ -24,18 +24,15 @@ if credentials_path and (
     del os.environ["GOOGLE_APPLICATION_CREDENTIALS"]
 
 try:
-    client = bigquery.Client(
-        project=PROJECT_ID,
-        location=BQ_LOCATION
-    )
+    client = bigquery.Client(project=PROJECT_ID, location=BQ_LOCATION)
     print(f"BigQuery connected to: {client.project} (location: {BQ_LOCATION})")
 except Exception as e:
     raise RuntimeError(f"BigQuery connection failed: {e}") from e
 
 
 def query_bigquery(sql: str) -> pd.DataFrame:
-    """Run SQL query on BigQuery with correct EU location."""
-    job = client.query(sql, location=BQ_LOCATION)   # ← location on every query
+    """Run SQL query on BigQuery with correct location."""
+    job = client.query(sql, location=BQ_LOCATION)
     return job.to_dataframe()
 
 
@@ -87,7 +84,8 @@ def get_order_by_id(order_id: str) -> dict:
         LIMIT 1
     """
     df = query_bigquery(sql)
-    return df.iloc[0].to_dict() if not df.empty else {"error": f"Order {order_id} not found"}
+    return df.iloc[0].to_dict() if not df.empty \
+        else {"error": f"Order {order_id} not found"}
 
 
 def get_customer_orders(customer_id: str) -> list:
@@ -183,7 +181,6 @@ if __name__ == "__main__":
     print("  Testing BigQuery Connector")
     print("=" * 50)
 
-    # Test 1: Product keyword search
     print("\n[TEST 1] Search products: keyword = 'watch'")
     try:
         results = search_products("watch")
@@ -195,7 +192,6 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"  ✗ Error: {e}")
 
-    # Test 2: Category + price filter
     print("\n[TEST 2] Electronics under $100")
     try:
         results = get_products_by_category("electronics", max_price=100)
@@ -207,7 +203,6 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"  ✗ Error: {e}")
 
-    # Test 3: Catalog stats
     print("\n[TEST 3] Product catalog statistics")
     try:
         stats = get_product_stats()
@@ -219,7 +214,6 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"  ✗ Error: {e}")
 
-    # Test 4: Real order lookup
     print("\n[TEST 4] Fetch a real order from BigQuery")
     try:
         sample_df = query_bigquery(
@@ -236,7 +230,6 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"  ✗ Error: {e}")
 
-    # Test 5: Fraud patterns
     print("\n[TEST 5] Fraud patterns — category: 'grocery'")
     try:
         fraud = get_fraud_patterns("grocery")
@@ -246,7 +239,6 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"  ✗ Error: {e}")
 
-    # Test 6: Risk scoring
     print("\n[TEST 6] Risk score — $850 grocery transaction in CA")
     try:
         risk = analyze_transaction_risk(850.00, "grocery", "CA")
