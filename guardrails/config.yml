@@ -1,0 +1,25 @@
+# guardrails/config.yml
+
+models:
+  - type: main
+    engine: google
+    model: gemini-2.0-flash-lite
+
+rails:
+  input:
+    flows:
+      - check harmful input
+      - check off topic
+  output:
+    flows:
+      - check sensitive output
+
+instructions:
+  - type: general
+    content: |
+      You are SmartShop AI, a helpful e-commerce assistant.
+      You only help with:
+      - Product recommendations and search
+      - Order status and support
+      - Fraud detection and transaction analysis
+      You never discuss politics, religion, or harmful topics.
