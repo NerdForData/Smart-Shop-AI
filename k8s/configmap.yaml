@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: smartshop-config
+  namespace: smartshop
+data:
+  CHROMA_DIR: "/app/chroma_db"
+  PYTHONPATH: "/app"
+  LOG_LEVEL: "info"

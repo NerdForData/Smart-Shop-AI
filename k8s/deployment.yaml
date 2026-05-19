@@ -1,0 +1,122 @@
+# k8s/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: smartshop-ai
+  namespace: smartshop
+  labels:
+    app: smartshop-ai
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: smartshop-ai
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: smartshop-ai
+        version: v1
+    spec:
+      containers:
+      - name: smartshop-ai
+        image: docker-smartshop-ai:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+          name: http
+
+        # Load secrets as environment variables
+        envFrom:
+        - secretRef:
+            name: smartshop-secrets
+        - configMapRef:
+            name: smartshop-config
+
+        # Resource limits
+        resources:
+          requests:
+            memory: "2Gi"
+            cpu: "1000m"
+          limits:
+            memory: "4Gi"
+            cpu: "1000m"
+
+        # Health checks
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+
+        # ChromaDB persistent storage
+        volumeMounts:
+        - name: chroma-storage
+          mountPath: /app/chroma_db
+        - name: gcloud-credentials
+          mountPath: /root/.config/gcloud
+          readOnly: true
+
+      volumes:
+      - name: chroma-storage
+        persistentVolumeClaim:
+          claimName: chroma-pvc
+      - name: gcloud-credentials
+        secret:
+          secretName: gcloud-credentials
+
+---
+# k8s/deployment.yaml (Redis)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: smartshop-redis
+  namespace: smartshop
+  labels:
+    app: smartshop-redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: smartshop-redis
+  template:
+    metadata:
+      labels:
+        app: smartshop-redis
+    spec:
+      containers:
+      - name: redis
+        image: redis:7.2-alpine
+        ports:
+        - containerPort: 6379
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+        volumeMounts:
+        - name: redis-storage
+          mountPath: /data
+      volumes:
+      - name: redis-storage
+        persistentVolumeClaim:
+          claimName: redis-pvc
