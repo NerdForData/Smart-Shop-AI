@@ -34,3 +34,14 @@ ENV/
 # OS
 .DS_Store
 Thumbs.db
+
+echo "terraform/terraform.tfvars" >> .gitignore
+echo "terraform/.terraform/" >> .gitignore
+echo "terraform/*.tfstate" >> .gitignore
+echo "terraform/*.tfstate.backup" >> .gitignore
+# Terraform
+terraform/.terraform/
+terraform/*.tfstate
+terraform/*.tfstate.backup
+terraform/.terraform.lock.hcl
+terraform/terraform.tfvars
