@@ -8,7 +8,7 @@ metadata:
     app: smartshop-ai
     version: v1
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: smartshop-ai
@@ -26,10 +26,10 @@ spec:
       containers:
       - name: smartshop-ai
         image: docker-smartshop-ai:latest
-        imagePullPolicy: Always
+        imagePullPolicy: Never
         ports:
-        - containerPort: 8000
-          name: http
+         - containerPort: 8000
+           name: http
 
         # Load secrets as environment variables
         envFrom:
@@ -41,11 +41,11 @@ spec:
         # Resource limits
         resources:
           requests:
-            memory: "2Gi"
-            cpu: "1000m"
+            memory: "512Mi"
+            cpu: "250m"
           limits:
-            memory: "4Gi"
-            cpu: "1000m"
+            memory: "1Gi"
+            cpu: "500m"
 
         # Health checks
         livenessProbe:
